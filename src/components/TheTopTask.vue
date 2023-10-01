@@ -67,10 +67,19 @@ export default {
         startTask() {
             // Vérifications
             if (this.taskname.length === 0) {
-                this.errorMsg = "Le nom d'une tâche ne peut pas être vide";
+                this.$emit("alert", {
+                    titre: "Attention",
+                    message: "Le nom d'une tâche ne peut pas être vide",
+                    type: "warning",
+                });
                 return;
             } else if (this.isTaskInProgress) {
                 this.errorMsg = "Une tâche est déjà en cours";
+                this.$emit("alert", {
+                    titre: "Attention",
+                    message: "Une tâche est déjà en cours",
+                    type: "warning",
+                });
                 return;
             } else {
                 this.errorMsg = null;

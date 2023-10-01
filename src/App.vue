@@ -6,7 +6,11 @@
 
         <el-container>
             <el-header height="60px">
-                <TheTopTask ref="TheTopTask" @newTask="addTask($event)" />
+                <TheTopTask
+                    ref="TheTopTask"
+                    @newTask="addTask($event)"
+                    @alert="showAlertModal($event)"
+                />
             </el-header>
 
             <el-main>
@@ -19,6 +23,8 @@
                     }"
                 />
             </el-main>
+
+            <Alert ref="Alert" />
         </el-container>
     </el-container>
 </template>
@@ -30,12 +36,14 @@ import * as TaskService from "./services/TaskService.js";
 import TheMenu from "./components/TheMenu.vue";
 import TheTopTask from "./components/TheTopTask.vue";
 import TaskList from "./components/TaskList.vue";
+import Alert from "./components/Alert.vue";
 
 export default {
     components: {
         TheMenu,
         TheTopTask,
         TaskList,
+        Alert,
     },
     data() {
         return {
@@ -58,6 +66,11 @@ export default {
                 await TaskService.updateAll(this.tasks);
             } catch (e) {
                 console.error(e);
+                this.showAlertModal({
+                    titre: "Hors connexion",
+                    message: "Les tâches n'ont pas pu être récupérées",
+                    type: "error",
+                });
             }
         },
         async deleteTask(taskID) {
@@ -77,6 +90,11 @@ export default {
                 await TaskService.updateAll(this.tasks);
             } catch (e) {
                 console.error(e);
+                this.showAlertModal({
+                    titre: "Hors connexion",
+                    message: "Les tâches n'ont pas pu être récupérées",
+                    type: "error",
+                });
             }
         },
         sendRestartTask(taskId) {
@@ -91,12 +109,24 @@ export default {
 
             this.$refs.TheTopTask.restartTask(newTaskName);
         },
+        showAlertModal(e) {
+            const titre = e.titre,
+                message = e.message,
+                type = e.type;
+
+            this.$refs.Alert.showNotification(titre, message, type);
+        },
     },
     async created() {
         try {
             this.tasks = await TaskService.getAll();
         } catch (e) {
             console.log(e);
+            this.showAlertModal({
+                titre: "Hors connexion",
+                message: "Les tâches n'ont pas pu être récupérées",
+                type: "error",
+            });
         }
 
         this.areTasksLoading = false;

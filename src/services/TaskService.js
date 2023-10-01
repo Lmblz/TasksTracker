@@ -15,5 +15,5 @@ export async function getAll() {
 
 // Mise à jour des tâches 
 export async function updateAll(newTasks) {
-    const rest = await instance.put('/', newTasks);
+    const res = await instance.put('/', newTasks);
 }
