@@ -1,12 +1,25 @@
 <template>
+    <el-select v-model="sortBy" placeholder="Select">
+        <el-option
+            label="La plus récente d'abord"
+            value="descending"
+        ></el-option>
+        <el-option
+            label="La plus ancienne d'abord"
+            value="ascending"
+        ></el-option>
+    </el-select>
     <el-table
         :data="tasks"
-        stripe
+        :row-class-name="checkHighlight"
         row-key="id"
+        @row-click="setHighlight"
         empty-text="Aucune tâche"
         v-loading="areTasksLoading"
+        ref="table"
     >
-        <el-table-column prop="name" label="Tâche"> </el-table-column>
+        <el-table-column prop="name" label="Tâche" sort-by="startTime">
+        </el-table-column>
 
         <el-table-column align="right" label="Début et fin" width="150">
             <template #header></template>
@@ -53,6 +66,11 @@ export default {
                 hour: "2-digit",
                 minute: "2-digit",
             }),
+            defaultSortBy: "ascending",
+            sortBy:
+                this.$route.query.sortBy === "ascending"
+                    ? "ascending"
+                    : "descending",
         };
     },
     methods: {
@@ -66,6 +84,22 @@ export default {
         areTasksLoading: {
             type: Boolean,
             default: false,
+        },
+    },
+    watch: {
+        sortBy(newVal) {
+            this.$router.push({
+                query: {
+                    sortBy: newVal === this.defaultSortBy ? undefined : newVal,
+                },
+            });
+            this.sortTable();
+        },
+        tasks: {
+            deep: true,
+            handler() {
+                this.sortTable();
+            },
         },
     },
     methods: {
@@ -92,7 +126,34 @@ export default {
             console.log(text);
             navigator.clipboard.writeText(text);
         },
+        sortTable() {
+            const sortBy = this.sortBy;
+            this.$refs.table.sort("name", sortBy);
+        },
+        checkHighlight({ row }) {
+            if (
+                this.$route.params.taskId &&
+                row.id === this.$route.params.taskId
+            ) {
+                return "highlight-line";
+            } else {
+                return "";
+            }
+        },
+        setHighlight(row) {
+            this.$router.push({ path: "/home/" + row.id });
+        },
     },
+
     components: { TaskListActions },
+    mounted() {
+        this.sortTable();
+    },
 };
 </script>
+
+<style scoped>
+.el-select {
+    float: right;
+}
+</style>

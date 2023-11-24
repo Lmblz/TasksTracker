@@ -14,14 +14,15 @@
             </el-header>
 
             <el-main>
-                <TaskList
+                <router-view
                     :tasks="tasks"
                     :areTasksLoading="areTasksLoading"
                     v-on="{
                         restart: sendRestartTask,
                         delete: deleteTask,
+                        submitForm: submitAppForm,
                     }"
-                />
+                ></router-view>
             </el-main>
 
             <Alert ref="Alert" />
@@ -35,23 +36,66 @@ import * as TaskService from "./services/TaskService.js";
 
 import TheMenu from "./components/TheMenu.vue";
 import TheTopTask from "./components/TheTopTask.vue";
-import TaskList from "./components/TaskList.vue";
 import Alert from "./components/Alert.vue";
 
 export default {
     components: {
         TheMenu,
         TheTopTask,
-        TaskList,
         Alert,
     },
     data() {
         return {
             tasks: [],
             areTasksLoading: true,
+            apiKey: "",
+            binId: "",
         };
     },
     methods: {
+        async getTasks() {
+            console.log("coucou");
+            try {
+                this.tasks = await TaskService.getAll();
+                localStorage.setItem("correctAppInfos", true);
+                this.showAlertModal({
+                    titre: "Succès",
+                    message: "Les tâches ont bien pu être récupérées",
+                    type: "success",
+                });
+            } catch (e) {
+                console.log(e);
+                this.tasks = [];
+                localStorage.removeItem("correctAppInfos");
+                this.showAlertModal({
+                    titre: "Hors connexion",
+                    message: "Les tâches n'ont pas pu être récupérées",
+                    type: "error",
+                });
+            }
+        },
+        getAppInfoInLocalStorage() {
+            if (this.apiKey == "" && localStorage.getItem("apiKey")) {
+                this.apiKey = localStorage.getItem("apiKey");
+            } else {
+                this.showAlertModal({
+                    titre: "Clé d'API manquante",
+                    message: "Aucune clé d'API indiquée",
+                    type: "error",
+                });
+            }
+
+            if (this.binId == "" && localStorage.getItem("binId")) {
+                console.log("on remplace la clé par la clé du LS");
+                this.binId = localStorage.getItem("binId");
+            } else {
+                this.showAlertModal({
+                    titre: "Id du bin manquant",
+                    message: "Aucun id de BIN indiquée",
+                    type: "error",
+                });
+            }
+        },
         async addTask({ name, startTime }) {
             // Ajout de la tâche en local
             this.tasks.unshift({
@@ -116,18 +160,35 @@ export default {
 
             this.$refs.Alert.showNotification(titre, message, type);
         },
+        async submitAppForm(data) {
+            let tempApiKey = data[0];
+            let tempBinId = data[1];
+            let modalContent = {
+                title: "",
+                message: "",
+                type: "",
+            };
+
+            if (tempApiKey == "" || tempApiKey == "") {
+                this.showAlertModal({
+                    titre: "Valeur(s) vide(s)",
+                    message: "Le formulaire contient des champs non remplis",
+                    type: "error",
+                });
+            } else {
+                this.apiKey = tempApiKey;
+                this.binId = tempBinId;
+            }
+
+            localStorage.setItem("apiKey", this.apiKey);
+            localStorage.setItem("binId", this.binId);
+
+            await this.getTasks();
+        },
     },
-    async created() {
-        try {
-            this.tasks = await TaskService.getAll();
-        } catch (e) {
-            console.log(e);
-            this.showAlertModal({
-                titre: "Hors connexion",
-                message: "Les tâches n'ont pas pu être récupérées",
-                type: "error",
-            });
-        }
+    async mounted() {
+        this.getAppInfoInLocalStorage();
+        this.getTasks();
 
         this.areTasksLoading = false;
     },
@@ -167,5 +228,9 @@ body {
     .el-input .el-input__inner {
         border: none !important;
     }
+}
+
+.highlight-line {
+    background: #40a0ff2a !important;
 }
 </style>

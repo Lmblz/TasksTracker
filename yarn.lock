@@ -149,6 +149,11 @@
     "@vue/compiler-dom" "3.0.7"
     "@vue/shared" "3.0.7"
 
+"@vue/devtools-api@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.5.0.tgz"
+  integrity sha512-o9KfBeaBmCKl10usN4crU53fYtC1r7jJwdGKjPT24t348rHxgfpZ0xL3Xm/gLUYnc0oTp8LAmrxOeLyu6tbk2Q==
+
 "@vue/devtools@^6.5.0":
   version "6.5.0"
   resolved "https://registry.npmjs.org/@vue/devtools/-/devtools-6.5.0.tgz"
@@ -1633,7 +1638,14 @@ vite@^2.0.5:
   optionalDependencies:
     fsevents "~2.3.1"
 
-vue@^3.0.5, vue@^3.0.7, vue@3.0.7:
+vue-router@^4.2.5:
+  version "4.2.5"
+  resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.2.5.tgz"
+  integrity sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==
+  dependencies:
+    "@vue/devtools-api" "^6.5.0"
+
+vue@^3.0.5, vue@^3.0.7, vue@^3.2.0, vue@3.0.7:
   version "3.0.7"
   resolved "https://registry.npmjs.org/vue/-/vue-3.0.7.tgz"
   integrity sha512-8h4TikD+JabbMK9aRlBO4laG0AtNHRPHynxYgWZ9sq1YUPfzynd9Jeeb27XNyZytC7aCQRX9xe1+TQJuc181Tw==
