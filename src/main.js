@@ -21,7 +21,7 @@ const router = VueRouter.createRouter({
       alias: "/home",
       name: "Home",
       component: HomePage,
-      meta: { needLoggedIn: true, needCorrectAppInfos: true },
+      meta: { needCorrectAppInfos: true },
       children: [
         {
           path: "home/:taskId",
@@ -33,17 +33,17 @@ const router = VueRouter.createRouter({
       path: "/settings",
       name: "Settings",
       component: SettingsPage,
-      meta: { needLoggedIn: true, needCorrectAppInfos: true },
+      meta: { needCorrectAppInfos: true },
       children: [
         {
           path: "app",
           component: SettingsApp,
-          meta: { needLoggedIn: false, needCorrectAppInfos: false },
+          meta: { needCorrectAppInfos: false },
         },
         {
           path: "user",
           component: SettingsUser,
-          meta: { needLoggedIn: true, needCorrectAppInfos: true },
+          meta: { needCorrectAppInfos: true },
         },
       ],
     },
@@ -51,11 +51,11 @@ const router = VueRouter.createRouter({
       path: "/login",
       name: "LogIn",
       component: LoginPage,
-      beforeEnter: (to, from) => {
-        if (localStorage.getItem("isLoggedIn")) {
-          return "/";
-        }
-      },
+      // beforeEnter: (to, from) => {
+      //   if (localStorage.getItem("isLoggedIn")) {
+      //     return "/";
+      //   }
+      // },
     },
     {
       path: "/notfound",
@@ -72,9 +72,9 @@ const router = VueRouter.createRouter({
 });
 
 router.beforeEach((to, from) => {
-  if (to.meta.needLoggedIn && !localStorage.getItem("isLoggedIn")) {
-    return "/login";
-  }
+  // if (to.meta.needLoggedIn && !localStorage.getItem("isLoggedIn")) {
+  //   return "/login";
+  // }
 
   if (to.meta.needCorrectAppInfos && !localStorage.getItem("correctAppInfos")) {
     return "/settings/app";
